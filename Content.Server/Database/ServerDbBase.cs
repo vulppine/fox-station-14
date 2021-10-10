@@ -170,7 +170,7 @@ namespace Content.Server.Database
 
             // ANTHROSYSTEM MODIFICATION
             List<AnthroMarking> markings = new();
-            foreach (var markingDbString in profile.AnthroSystem.Markings.Split('|'))
+            foreach (var markingDbString in profile.Markings.Split('|'))
             {
                 AnthroMarking? marking = AnthroMarking.ParseFromDbString(markingDbString);
                 if (marking is null) continue;
@@ -178,7 +178,7 @@ namespace Content.Server.Database
             }
 
             var speciesBase = AnthroSpeciesBase.Human;
-            if (Enum.TryParse<AnthroSpeciesBase>(profile.AnthroSystem.SpeciesBase, true, out var speciesBaseVal))
+            if (Enum.TryParse<AnthroSpeciesBase>(profile.SpeciesBase, true, out var speciesBaseVal))
                 speciesBase = speciesBaseVal;
 
             // ANTHROSYSTEM MODIFICATION
@@ -239,6 +239,15 @@ namespace Content.Server.Database
                 SkinColor = appearance.SkinColor.ToHex(),
                 Clothing = humanoid.Clothing.ToString(),
                 Backpack = humanoid.Backpack.ToString(),
+                // ANTHROSYSTEM MODIFICATION
+                // TODO: actually learn how EF works and put
+                // this into its own table (keep getting
+                // NullRef issues when it's put
+                // into its own table)
+                Markings = markings,
+                SpeciesBase = appearance.SpeciesBase.ToString(),
+                // ANTHROSYSTEM MODIFICATION
+
                 Slot = slot,
                 PreferenceUnavailable = (DbPreferenceUnavailableMode) humanoid.PreferenceUnavailable
             };
@@ -251,13 +260,6 @@ namespace Content.Server.Database
                 humanoid.AntagPreferences
                     .Select(a => new Antag {AntagName = a})
             );
-            entity.AnthroSystem = new AnthroSystem
-            {
-                // ANTHROSYSTEM MODIFICATION
-                Markings = markings,
-                SpeciesBase = appearance.SpeciesBase.ToString()
-                // ANTHROSYSTEM MODIFICATION
-            };
 
             return entity;
         }
