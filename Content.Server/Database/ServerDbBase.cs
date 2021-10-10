@@ -5,10 +5,12 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Content.Shared.AnthroSystem;
 using Content.Shared.CharacterAppearance;
 using Content.Shared.Preferences;
 using Microsoft.EntityFrameworkCore;
 using Robust.Shared.Enums;
+using Robust.Shared.Log;
 using Robust.Shared.Maths;
 using Robust.Shared.Network;
 
@@ -166,6 +168,21 @@ namespace Content.Server.Database
             if (Enum.TryParse<Gender>(profile.Gender, true, out var genderVal))
                 gender = genderVal;
 
+            // ANTHROSYSTEM MODIFICATION
+            List<AnthroMarking> markings = new();
+            foreach (var markingDbString in profile.AnthroSystem.Markings.Split('|'))
+            {
+                AnthroMarking? marking = AnthroMarking.ParseFromDbString(markingDbString);
+                if (marking is null) continue;
+                markings.Add(marking);
+            }
+
+            var speciesBase = AnthroSpeciesBase.Human;
+            if (Enum.TryParse<AnthroSpeciesBase>(profile.AnthroSystem.SpeciesBase, true, out var speciesBaseVal))
+                speciesBase = speciesBaseVal;
+
+            // ANTHROSYSTEM MODIFICATION
+
             return new HumanoidCharacterProfile(
                 profile.CharacterName,
                 profile.Age,
@@ -178,7 +195,10 @@ namespace Content.Server.Database
                     profile.FacialHairName,
                     Color.FromHex(profile.FacialHairColor),
                     Color.FromHex(profile.EyeColor),
-                    Color.FromHex(profile.SkinColor)
+                    Color.FromHex(profile.SkinColor),
+                    // ANTHROSYSTEM MODIFICATION
+                    markings,
+                    speciesBase
                 ),
                 clothing,
                 backpack,
@@ -191,6 +211,19 @@ namespace Content.Server.Database
         private static Profile ConvertProfiles(HumanoidCharacterProfile humanoid, int slot)
         {
             var appearance = (HumanoidCharacterAppearance) humanoid.CharacterAppearance;
+            // yell at me later for denormalized information,
+            // i don't really Care since this preserves
+            // marking ranking information
+            // ANTHROSYSTEM MODIFICATION
+            List<string> markingDbStrings = new();
+            Logger.DebugS("DB", $"Marking count: {appearance.Markings.Count}");
+            foreach (var marking in appearance.Markings)
+            {
+                markingDbStrings.Add(marking.ToString());
+            }
+            string markings = string.Join('|', markingDbStrings);
+            Logger.DebugS("DB", $"Markings saved as {markings}");
+            // ANTHROSYSTEM MODIFICATION
 
             var entity = new Profile
             {
@@ -218,6 +251,13 @@ namespace Content.Server.Database
                 humanoid.AntagPreferences
                     .Select(a => new Antag {AntagName = a})
             );
+            entity.AnthroSystem = new AnthroSystem
+            {
+                // ANTHROSYSTEM MODIFICATION
+                Markings = markings,
+                SpeciesBase = appearance.SpeciesBase.ToString()
+                // ANTHROSYSTEM MODIFICATION
+            };
 
             return entity;
         }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Content.Server.Database;
+using Content.Shared.AnthroSystem;
 using Content.Shared.CharacterAppearance;
 using Content.Shared.GameTicking;
 using Content.Shared.Preferences;
@@ -51,7 +52,9 @@ namespace Content.Tests.Server.Preferences
                     "Shaved",
                     Color.Aquamarine,
                     Color.Azure,
-                    Color.Beige
+                    Color.Beige,
+                    new List<AnthroMarking>(),
+                    AnthroSpeciesBase.Human
                 ),
                 ClothingPreference.Jumpskirt,
                 BackpackPreference.Backpack,

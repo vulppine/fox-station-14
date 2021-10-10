@@ -77,6 +77,12 @@ namespace Content.Server.Database
             modelBuilder.Entity<AdminRankFlag>()
                 .HasIndex(f => new {f.Flag, f.AdminRankId})
                 .IsUnique();
+
+            // ANTHROSYSTEM MODIFICATION
+            modelBuilder.Entity<AnthroSystem>()
+                .HasIndex(s => s.ProfileId)
+                .IsUnique();
+            // ANTHROSYSTEM MODIFICATION
         }
     }
 
@@ -113,6 +119,7 @@ namespace Content.Server.Database
         [Column("skin_color")] public string SkinColor { get; set; } = null!;
         [Column("clothing")] public string Clothing { get; set; } = null!;
         [Column("backpack")] public string Backpack { get; set; } = null!;
+
         public List<Job> Jobs { get; } = new();
         public List<Antag> Antags { get; } = new();
 
@@ -120,7 +127,22 @@ namespace Content.Server.Database
 
         [Column("preference_id")] public int PreferenceId { get; set; }
         public Preference Preference { get; set; } = null!;
+
+    // ANTHROSYSTEM MODIFICATION
+        public AnthroSystem AnthroSystem { get; set; } = null!;
     }
+
+    [Table("anthro_system")]
+    public class AnthroSystem
+    {
+        [Column("anthro_system_id")] public int Id { get; set; }
+        public Profile Profile { get; set; } = null!;
+        [Column("profile_id")] public int ProfileId { get; set; }
+
+        [Column("markings")] public string Markings { get; set; } = null!;
+        [Column("species_base")] public string SpeciesBase { get; set; } = null!;
+    }
+    // ANTHROSYSTEM MODIFICATION
 
     [Table("job")]
     public class Job

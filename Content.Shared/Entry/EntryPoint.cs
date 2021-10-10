@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Content.Shared.AnthroSystem;
 using Content.Shared.CharacterAppearance;
 using Content.Shared.Chemistry.Reaction;
 using Content.Shared.Chemistry.Reagent;
@@ -38,6 +39,10 @@ namespace Content.Shared.Entry
             _initTileDefinitions();
             CheckReactions();
             IoCManager.Resolve<SpriteAccessoryManager>().Initialize();
+            // ANTHROSYSTEM MODIFICATION
+            IoCManager.Resolve<AnthroMarkingManager>().Initialize();
+            IoCManager.Resolve<AnthroSpeciesManager>().Initialize();
+            // ANTHROSYSTEM MODIFICATION
         }
 
         private void CheckReactions()

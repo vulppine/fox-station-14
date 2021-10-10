@@ -143,6 +143,36 @@ namespace Content.Server.Database.Migrations.Postgres
                     b.ToTable("antag");
                 });
 
+            modelBuilder.Entity("Content.Server.Database.AnthroSystem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("anthro_system_id")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Markings")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("markings");
+
+                    b.Property<int>("ProfileId")
+                        .HasColumnType("integer")
+                        .HasColumnName("profile_id");
+
+                    b.Property<string>("SpeciesBase")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("species_base");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProfileId")
+                        .IsUnique();
+
+                    b.ToTable("anthro_system");
+                });
+
             modelBuilder.Entity("Content.Server.Database.AssignedUserId", b =>
                 {
                     b.Property<int>("Id")
@@ -530,6 +560,17 @@ namespace Content.Server.Database.Migrations.Postgres
                     b.Navigation("Profile");
                 });
 
+            modelBuilder.Entity("Content.Server.Database.AnthroSystem", b =>
+                {
+                    b.HasOne("Content.Server.Database.Profile", "Profile")
+                        .WithOne("AnthroSystem")
+                        .HasForeignKey("Content.Server.Database.AnthroSystem", "ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+                });
+
             modelBuilder.Entity("Content.Server.Database.Job", b =>
                 {
                     b.HasOne("Content.Server.Database.Profile", "Profile")
@@ -588,6 +629,9 @@ namespace Content.Server.Database.Migrations.Postgres
             modelBuilder.Entity("Content.Server.Database.Profile", b =>
                 {
                     b.Navigation("Antags");
+
+                    b.Navigation("AnthroSystem")
+                        .IsRequired();
 
                     b.Navigation("Jobs");
                 });

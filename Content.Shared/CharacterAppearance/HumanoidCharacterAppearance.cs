@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Content.Shared.AnthroSystem;
 using Robust.Shared.IoC;
 using Robust.Shared.Maths;
 using Robust.Shared.Random;
@@ -6,15 +9,21 @@ using Robust.Shared.Serialization;
 
 namespace Content.Shared.CharacterAppearance
 {
+    // Major changes here to mimic how HumanoidCharacterProfile
+    // deals with collections.
     [Serializable, NetSerializable]
     public class HumanoidCharacterAppearance : ICharacterAppearance
     {
-        public HumanoidCharacterAppearance(string hairStyleId,
+        private readonly List<AnthroMarking> _markings;
+
+        private HumanoidCharacterAppearance(string hairStyleId,
             Color hairColor,
             string facialHairStyleId,
             Color facialHairColor,
             Color eyeColor,
-            Color skinColor)
+            Color skinColor,
+            List<AnthroMarking> markings,
+            AnthroSpeciesBase speciesBase)
         {
             HairStyleId = hairStyleId;
             HairColor = ClampColor(hairColor);
@@ -22,7 +31,29 @@ namespace Content.Shared.CharacterAppearance
             FacialHairColor = ClampColor(facialHairColor);
             EyeColor = ClampColor(eyeColor);
             SkinColor = ClampColor(skinColor);
+            _markings = markings;
+            SpeciesBase = speciesBase;
         }
+
+        public HumanoidCharacterAppearance(string hairStyleId,
+            Color hairColor,
+            string facialHairStyleId,
+            Color facialHairColor,
+            Color eyeColor,
+            Color skinColor,
+            IReadOnlyList<AnthroMarking> markings,
+            AnthroSpeciesBase speciesBase)
+            : this(hairStyleId,
+                hairColor,
+                facialHairStyleId,
+                facialHairColor,
+                eyeColor,
+                skinColor,
+                new List<AnthroMarking>(markings),
+                speciesBase)
+        {
+        }
+
 
         public string HairStyleId { get; }
         public Color HairColor { get; }
@@ -30,36 +61,54 @@ namespace Content.Shared.CharacterAppearance
         public Color FacialHairColor { get; }
         public Color EyeColor { get; }
         public Color SkinColor { get; }
+        // ANTHROSYSTEM MODIFICATION
+        public IReadOnlyList<AnthroMarking> Markings => _markings;
+        public AnthroSpeciesBase SpeciesBase { get; }
+        // ANTHROSYSTEM MODIFICATION
 
         public HumanoidCharacterAppearance WithHairStyleName(string newName)
         {
-            return new(newName, HairColor, FacialHairStyleId, FacialHairColor, EyeColor, SkinColor);
+            return new(newName, HairColor, FacialHairStyleId, FacialHairColor, EyeColor, SkinColor, Markings, SpeciesBase);
         }
 
         public HumanoidCharacterAppearance WithHairColor(Color newColor)
         {
-            return new(HairStyleId, newColor, FacialHairStyleId, FacialHairColor, EyeColor, SkinColor);
+            return new(HairStyleId, newColor, FacialHairStyleId, FacialHairColor, EyeColor, SkinColor, Markings, SpeciesBase);
         }
 
         public HumanoidCharacterAppearance WithFacialHairStyleName(string newName)
         {
-            return new(HairStyleId, HairColor, newName, FacialHairColor, EyeColor, SkinColor);
+            return new(HairStyleId, HairColor, newName, FacialHairColor, EyeColor, SkinColor, Markings, SpeciesBase);
         }
 
         public HumanoidCharacterAppearance WithFacialHairColor(Color newColor)
         {
-            return new(HairStyleId, HairColor, FacialHairStyleId, newColor, EyeColor, SkinColor);
+            return new(HairStyleId, HairColor, FacialHairStyleId, newColor, EyeColor, SkinColor, Markings, SpeciesBase);
         }
 
         public HumanoidCharacterAppearance WithEyeColor(Color newColor)
         {
-            return new(HairStyleId, HairColor, FacialHairStyleId, FacialHairColor, newColor, SkinColor);
+            return new(HairStyleId, HairColor, FacialHairStyleId, FacialHairColor, newColor, SkinColor, Markings, SpeciesBase);
         }
 
         public HumanoidCharacterAppearance WithSkinColor(Color newColor)
         {
-            return new(HairStyleId, HairColor, FacialHairStyleId, FacialHairColor, EyeColor, newColor);
+            return new(HairStyleId, HairColor, FacialHairStyleId, FacialHairColor, EyeColor, newColor, Markings, SpeciesBase);
         }
+
+        // ANTHROSYSTEM MODIFICATION
+        public HumanoidCharacterAppearance WithMarkings(List<AnthroMarking> newMarkings)
+        {
+            return new(HairStyleId, HairColor, FacialHairStyleId, FacialHairColor, EyeColor, SkinColor, newMarkings, SpeciesBase);
+        }
+
+        public HumanoidCharacterAppearance WithSpeciesBase(AnthroSpeciesBase newSpeciesBase)
+        {
+            return new(HairStyleId, HairColor, FacialHairStyleId, FacialHairColor, EyeColor, SkinColor, Markings, newSpeciesBase);
+        }
+
+        // ANTHROSYSTEM MODIFICATION
+
 
         public static HumanoidCharacterAppearance Default()
         {
@@ -69,7 +118,11 @@ namespace Content.Shared.CharacterAppearance
                 HairStyles.DefaultFacialHairStyle,
                 Color.Black,
                 Color.Black,
-                Color.FromHex("#C0967F")
+                Color.FromHex("#C0967F"),
+                // ANTHROSYSTEM MODIFICATION
+                new List<AnthroMarking>(),
+                AnthroSpeciesBase.Human
+                // ANTHROSYSTEM MODIFICATION
             );
         }
 
@@ -93,7 +146,7 @@ namespace Content.Shared.CharacterAppearance
                 .WithBlue(RandomizeColor(newHairColor.B));
 
             // TODO: Add random eye and skin color
-            return new HumanoidCharacterAppearance(newHairStyle, newHairColor, newFacialHairStyle, newHairColor, Color.Black, Color.FromHex("#C0967F"));
+            return new HumanoidCharacterAppearance(newHairStyle, newHairColor, newFacialHairStyle, newHairColor, Color.Black, Color.FromHex("#C0967F"), new List<AnthroMarking>(), AnthroSpeciesBase.Human);
 
             float RandomizeColor(float channel)
             {
@@ -126,13 +179,29 @@ namespace Content.Shared.CharacterAppearance
             var eyeColor = ClampColor(appearance.EyeColor);
             var skinColor = ClampColor(appearance.SkinColor);
 
+            // ANTHROSYSTEM MODIFICATION
+            var markingManager = IoCManager.Resolve<AnthroMarkingManager>();
+            List<AnthroMarking> validMarkings = new();
+            foreach (var marking in appearance.Markings)
+            {
+                if (markingManager.IsValidMarking(marking.MarkingId, out AnthroMarkingPrototype? validMarkingPrototype))
+                {
+                    AnthroMarking validMarking = validMarkingPrototype.AsMarking();
+                    validMarking.MarkingColor = marking.MarkingColor;
+                    validMarkings.Add(validMarking);
+                }
+            }
+            // ANTHROSYSTEM MODIFICATION
+
             return new HumanoidCharacterAppearance(
                 hairStyleId,
                 hairColor,
                 facialHairStyleId,
                 facialHairColor,
                 eyeColor,
-                skinColor);
+                skinColor,
+                validMarkings,
+                appearance.SpeciesBase);
         }
 
         public bool MemberwiseEquals(ICharacterAppearance maybeOther)
@@ -144,6 +213,8 @@ namespace Content.Shared.CharacterAppearance
             if (!FacialHairColor.Equals(other.FacialHairColor)) return false;
             if (!EyeColor.Equals(other.EyeColor)) return false;
             if (!SkinColor.Equals(other.SkinColor)) return false;
+            if (!_markings.SequenceEqual(other._markings)) return false;
+            if (!SpeciesBase.Equals(other.SpeciesBase)) return false;
             return true;
         }
     }

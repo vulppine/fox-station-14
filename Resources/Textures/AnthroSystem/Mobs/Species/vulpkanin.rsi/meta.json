@@ -1,0 +1,7 @@
+{
+	"version": 1,
+	"size": {"x": 32, "y": 32},
+	"states": [
+		{"name": "head_m", "directions": 4, "delays": [[1.0], [1.0], [1.0], [1.0]]}
+	]
+}

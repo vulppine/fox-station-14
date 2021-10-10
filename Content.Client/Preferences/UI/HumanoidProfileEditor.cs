@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Content.Client.AnthroSystem; // AnthroSystem modification
 using Content.Client.CharacterAppearance;
 using Content.Client.Lobby.UI;
 using Content.Client.Message;
@@ -623,6 +624,74 @@ namespace Content.Client.Preferences.UI
             };
             middleContainer.AddChild(rightColumn);
 
+            // ANTHROSYSTEM MODIFICATION
+            #region Markings
+
+            _markingPicker = new AnthroMarkingPicker
+            {
+                HorizontalAlignment = HAlignment.Center
+            };
+            _markingPicker.OnSpeciesSelect += species =>
+            {
+               if (Profile is null)
+                    return;
+                Profile = Profile.WithCharacterAppearance(
+                    Profile.Appearance.WithSpeciesBase(species));
+                IsDirty = true;
+            };
+            _markingPicker.OnBodyColorChange += color =>
+            {
+                if (Profile is null)
+                    return;
+                Profile = Profile.WithCharacterAppearance(
+                    Profile.Appearance.WithSkinColor(color));
+                IsDirty = true;
+            };
+            _markingPicker.OnMarkingAdded += markingList =>
+            {
+                if (Profile is null)
+                    return;
+                Profile = Profile.WithCharacterAppearance(
+                    Profile.Appearance.WithMarkings(markingList));
+                IsDirty = true;
+            };
+            _markingPicker.OnMarkingRemoved += markingList =>
+            {
+                if (Profile is null)
+                    return;
+                Profile = Profile.WithCharacterAppearance(
+                    Profile.Appearance.WithMarkings(markingList));
+                IsDirty = true;
+
+            };
+            _markingPicker.OnMarkingColorChange += markingList =>
+            {
+                if (Profile is null)
+                    return;
+                Profile = Profile.WithCharacterAppearance(
+                    Profile.Appearance.WithMarkings(markingList));
+                IsDirty = true;
+
+            };
+            _markingPicker.OnMarkingRankChange += markingList =>
+            {
+                if (Profile is null)
+                    return;
+                Profile = Profile.WithCharacterAppearance(
+                    Profile.Appearance.WithMarkings(markingList));
+                IsDirty = true;
+
+            };
+            _markingPicker.Populate();
+
+            var markingsBox = HumanoidProfileEditor.MarkingsTab(_markingPicker);
+            tabContainer.AddChild(markingsBox);
+            tabContainer.SetTabTitle(3, "Markings");
+
+            #endregion Markings
+            // ANTHROSYSTEM MODIFICATION
+
+
             #region Import/Export
 
             var importExportPanelContainer = HighlightedContainer();
@@ -918,6 +987,7 @@ namespace Content.Client.Preferences.UI
             UpdateSaveButton();
             UpdateJobPriorities();
             UpdateAntagPreferences();
+            UpdateMarkings();
 
             _needUpdatePreview = true;
 

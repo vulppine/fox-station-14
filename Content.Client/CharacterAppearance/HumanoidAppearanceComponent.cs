@@ -12,7 +12,8 @@ using Robust.Shared.Prototypes;
 namespace Content.Client.CharacterAppearance
 {
     [RegisterComponent]
-    public sealed class HumanoidAppearanceComponent : SharedHumanoidAppearanceComponent, IBodyPartAdded, IBodyPartRemoved
+    // Required to be partial to allow drop-in.
+    public sealed partial class HumanoidAppearanceComponent : SharedHumanoidAppearanceComponent, IBodyPartAdded, IBodyPartRemoved
     {
         [Dependency] private readonly SpriteAccessoryManager _accessoryManager = default!;
         [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
@@ -41,6 +42,7 @@ namespace Content.Client.CharacterAppearance
         {
             base.Startup();
 
+            InitAnthroSystem(); // AnthroSystem Modification
             UpdateLooks();
         }
 
@@ -106,6 +108,8 @@ namespace Content.Client.CharacterAppearance
 
             sprite.LayerSetSprite(HumanoidVisualLayers.Hair, hairPrototype.Sprite);
             sprite.LayerSetSprite(HumanoidVisualLayers.FacialHair, facialHairPrototype.Sprite);
+
+            UpdateAnthroSystem(); // AnthroSystem Modification
         }
 
         public void BodyPartAdded(BodyPartAddedEventArgs args)
