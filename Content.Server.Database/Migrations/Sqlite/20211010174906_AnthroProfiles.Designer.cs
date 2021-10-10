@@ -3,14 +3,16 @@ using System;
 using Content.Server.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Content.Server.Database.Migrations.Sqlite
 {
     [DbContext(typeof(SqliteServerDbContext))]
-    partial class SqliteServerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211010174906_AnthroProfiles")]
+    partial class AnthroProfiles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,6 +137,31 @@ namespace Content.Server.Database.Migrations.Sqlite
                     b.ToTable("antag");
                 });
 
+            modelBuilder.Entity("Content.Server.Database.AnthroProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("anthro_profile_id");
+
+                    b.Property<string>("Markings")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("markings");
+
+                    b.Property<string>("SpeciesBase")
+                        .IsRequired()
+                        .HasColumnType("TEXT")
+                        .HasColumnName("species_base");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.ToTable("anthro_profile");
+                });
+
             modelBuilder.Entity("Content.Server.Database.AssignedUserId", b =>
                 {
                     b.Property<int>("Id")
@@ -235,6 +262,10 @@ namespace Content.Server.Database.Migrations.Sqlite
                         .HasColumnType("INTEGER")
                         .HasColumnName("age");
 
+                    b.Property<int>("AnthroProfileId")
+                        .HasColumnType("INTEGER")
+                        .HasColumnName("anthro_profile_id");
+
                     b.Property<string>("Backpack")
                         .IsRequired()
                         .HasColumnType("TEXT")
@@ -280,11 +311,6 @@ namespace Content.Server.Database.Migrations.Sqlite
                         .HasColumnType("TEXT")
                         .HasColumnName("hair_name");
 
-                    b.Property<string>("Markings")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("markings");
-
                     b.Property<int>("PreferenceId")
                         .HasColumnType("INTEGER")
                         .HasColumnName("preference_id");
@@ -307,12 +333,9 @@ namespace Content.Server.Database.Migrations.Sqlite
                         .HasColumnType("INTEGER")
                         .HasColumnName("slot");
 
-                    b.Property<string>("SpeciesBase")
-                        .IsRequired()
-                        .HasColumnType("TEXT")
-                        .HasColumnName("species_base");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("AnthroProfileId");
 
                     b.HasIndex("PreferenceId");
 
@@ -520,11 +543,19 @@ namespace Content.Server.Database.Migrations.Sqlite
 
             modelBuilder.Entity("Content.Server.Database.Profile", b =>
                 {
+                    b.HasOne("Content.Server.Database.AnthroProfile", "AnthroProfile")
+                        .WithMany()
+                        .HasForeignKey("AnthroProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Content.Server.Database.Preference", "Preference")
                         .WithMany("Profiles")
                         .HasForeignKey("PreferenceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AnthroProfile");
 
                     b.Navigation("Preference");
                 });

@@ -4,15 +4,17 @@ using System.Net;
 using Content.Server.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Content.Server.Database.Migrations.Postgres
 {
     [DbContext(typeof(PostgresServerDbContext))]
-    partial class PostgresServerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211010174915_AnthroProfiles")]
+    partial class AnthroProfiles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,6 +143,32 @@ namespace Content.Server.Database.Migrations.Postgres
                         .IsUnique();
 
                     b.ToTable("antag");
+                });
+
+            modelBuilder.Entity("Content.Server.Database.AnthroProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("anthro_profile_id")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<string>("Markings")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("markings");
+
+                    b.Property<string>("SpeciesBase")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("species_base");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.ToTable("anthro_profile");
                 });
 
             modelBuilder.Entity("Content.Server.Database.AssignedUserId", b =>
@@ -410,6 +438,10 @@ namespace Content.Server.Database.Migrations.Postgres
                         .HasColumnType("integer")
                         .HasColumnName("age");
 
+                    b.Property<int>("AnthroProfileId")
+                        .HasColumnType("integer")
+                        .HasColumnName("anthro_profile_id");
+
                     b.Property<string>("Backpack")
                         .IsRequired()
                         .HasColumnType("text")
@@ -455,11 +487,6 @@ namespace Content.Server.Database.Migrations.Postgres
                         .HasColumnType("text")
                         .HasColumnName("hair_name");
 
-                    b.Property<string>("Markings")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("markings");
-
                     b.Property<int>("PreferenceId")
                         .HasColumnType("integer")
                         .HasColumnName("preference_id");
@@ -482,12 +509,9 @@ namespace Content.Server.Database.Migrations.Postgres
                         .HasColumnType("integer")
                         .HasColumnName("slot");
 
-                    b.Property<string>("SpeciesBase")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("species_base");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("AnthroProfileId");
 
                     b.HasIndex("PreferenceId");
 
@@ -564,11 +588,19 @@ namespace Content.Server.Database.Migrations.Postgres
 
             modelBuilder.Entity("Content.Server.Database.Profile", b =>
                 {
+                    b.HasOne("Content.Server.Database.AnthroProfile", "AnthroProfile")
+                        .WithMany()
+                        .HasForeignKey("AnthroProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Content.Server.Database.Preference", "Preference")
                         .WithMany("Profiles")
                         .HasForeignKey("PreferenceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AnthroProfile");
 
                     b.Navigation("Preference");
                 });
