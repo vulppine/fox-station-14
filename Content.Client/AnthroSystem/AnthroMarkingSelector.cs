@@ -37,11 +37,6 @@ namespace Content.Client.AnthroSystem
 
 
         private readonly Control _colorContainer;
-        /*
-        private readonly ColorSlider _colorSliderR;
-        private readonly ColorSlider _colorSliderG;
-        private readonly ColorSlider _colorSliderB;
-        */
 
         // can there be something else other than this???
         // maybe make a whole ass drop down menu or
@@ -70,7 +65,7 @@ namespace Content.Client.AnthroSystem
             for (int i = 0; i < _usedMarkingList.Count; i++)
             {
                 AnthroMarking marking = _usedMarkingList[i];
-                if (_markingManager.IsValidMarking(ref marking, out AnthroMarkingPrototype? newMarking))
+                if (_markingManager.IsValidMarking(marking, out AnthroMarkingPrototype? newMarking))
                 {
                     // TODO: Composite sprite preview, somehow.
                     var _item = _usedMarkings.AddItem(newMarking.ID, newMarking.Sprites[0].Frame0());
@@ -221,19 +216,6 @@ namespace Content.Client.AnthroSystem
                 Visible = false
             };
             vBox.AddChild(_colorContainer);
-            /*
-            _colorContainer.AddChild(new Label { Text = "Current marking color:" });
-            _colorContainer.AddChild(_colorSliderR = new ColorSlider(StyleNano.StyleClassSliderRed));
-            _colorContainer.AddChild(_colorSliderG = new ColorSlider(StyleNano.StyleClassSliderGreen));
-            _colorContainer.AddChild(_colorSliderB = new ColorSlider(StyleNano.StyleClassSliderBlue));
-
-            Action colorChanged = ColorChanged;
-            _colorSliderR.OnValueChanged += colorChanged;
-            _colorSliderG.OnValueChanged += colorChanged;
-            _colorSliderB.OnValueChanged += colorChanged;
-            */
-
-
         }
 
         public void Populate()

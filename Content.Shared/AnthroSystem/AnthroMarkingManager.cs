@@ -30,7 +30,7 @@ namespace Content.Shared.AnthroSystem
         // the most DEVIOUS lick
         // mostly because i seriously don't like the whole out thing, but whatever
         // TODO: O(n) to O(log n)
-        public bool IsValidMarking(ref AnthroMarking marking, [NotNullWhen(true)] out AnthroMarkingPrototype? markingResult)
+        public bool IsValidMarking(AnthroMarking marking, [NotNullWhen(true)] out AnthroMarkingPrototype? markingResult)
         {
             foreach (var markingPrototype in _index)
             {
@@ -39,6 +39,7 @@ namespace Content.Shared.AnthroSystem
                     if (markingPrototype.MarkingPartNames.Count
                             == markingPrototype.Sprites.Count)
                     {
+                        /*
                         if (marking.MarkingColors.Count != markingPrototype.Sprites.Count)
                         {
                             List<Color> colors = new();
@@ -48,6 +49,8 @@ namespace Content.Shared.AnthroSystem
                             }
                             marking = new AnthroMarking(marking.MarkingId, colors);
                         }
+                        */
+
                         markingResult = markingPrototype;
                         return true;
                     }

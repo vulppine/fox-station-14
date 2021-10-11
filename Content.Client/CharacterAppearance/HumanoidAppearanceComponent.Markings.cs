@@ -17,7 +17,7 @@ namespace Content.Client.CharacterAppearance
         [Dependency] private readonly AnthroSpeciesManager _speciesManager = default!;
 
         private Dictionary<HumanoidVisualLayers, List<AnthroMarking>> _activeMarkings = new();
-        private List<AnthroMarking> _lastMarkingSet = new();
+        private IReadOnlyList<AnthroMarking>? _lastMarkingSet;
         // the default body is a human body, so they always spawn with human parts
         private AnthroSpeciesBase _lastBase = AnthroSpeciesBase.Human;
 
@@ -95,26 +95,11 @@ namespace Content.Client.CharacterAppearance
                 Logger.DebugS("AnthroSystem", "Rendering markings now.");
                 Logger.DebugS("AnthroSystem", $"Marking count: {Appearance.Markings.Count}");
 
-                /*
-                foreach (var marking in _lastMarkingSet)
-                {
-                    // there is NO EASY WAY to do this
-                    // so we just iterate over every single
-                    // part, and attempt to remove any layers
-                    // that match
-                    if (!partSprite.LayerMapTryGet(marking.MarkingId, out var layer)) continue;
-                    partSprite.RemoveLayer(layer);
-                    partSprite.LayerMapRemove(marking.MarkingId);
-                }
-
-                _lastMarkingSet = new List<AnthroMarking>(Appearance.Markings);
-                */
 
                 // Top -> Bottom ordering
-                foreach (var m in Appearance.Markings.Reverse())
+                foreach (var marking in Appearance.Markings.Reverse())
                 {
-                    AnthroMarking marking = m; // bluh
-                    if (!_markingManager.IsValidMarking(ref marking, out AnthroMarkingPrototype? markingPrototype))
+                    if (!_markingManager.IsValidMarking(marking, out AnthroMarkingPrototype? markingPrototype))
                     {
                         Logger.DebugS("AnthroSystem", $"Invalid marking {marking.MarkingId}");
                         continue;

@@ -188,10 +188,9 @@ namespace Content.Shared.CharacterAppearance
             // ANTHROSYSTEM MODIFICATION
             var markingManager = IoCManager.Resolve<AnthroMarkingManager>();
             List<AnthroMarking> validMarkings = new();
-            foreach (var m in appearance.Markings)
+            foreach (var marking in appearance.Markings)
             {
-                AnthroMarking marking = m;
-                if (markingManager.IsValidMarking(ref marking, out AnthroMarkingPrototype? validMarkingPrototype))
+                if (markingManager.IsValidMarking(marking, out AnthroMarkingPrototype? validMarkingPrototype))
                 {
                     AnthroMarking validMarking = validMarkingPrototype.AsMarking();
                     validMarkings.Add(new AnthroMarking(validMarking.MarkingId, marking.MarkingColors));
