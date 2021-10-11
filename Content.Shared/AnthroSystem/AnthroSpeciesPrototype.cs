@@ -13,9 +13,6 @@ namespace Content.Shared.AnthroSystem
         [DataField("id", required: true)]
         public string ID { get; } = "species";
 
-        [DataField("speciesBase", required: true)]
-        public AnthroSpeciesBase SpeciesBase { get; } = default!;
-
         // Easily map visual layers to sprites in one go.
         [DataField("speciesSprite", required: true)]
         public Dictionary<HumanoidVisualLayers, SpriteSpecifier?> SpeciesParts { get; } = default!;

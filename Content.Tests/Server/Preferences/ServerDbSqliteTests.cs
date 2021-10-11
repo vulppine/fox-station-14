@@ -54,7 +54,7 @@ namespace Content.Tests.Server.Preferences
                     Color.Azure,
                     Color.Beige,
                     new List<AnthroMarking>(),
-                    AnthroSpeciesBase.Human
+                    AnthroSpeciesManager.DefaultBase
                 ),
                 ClothingPreference.Jumpskirt,
                 BackpackPreference.Backpack,

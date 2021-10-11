@@ -1,35 +1,33 @@
-# Standard human.
 - type: anthroSpecies
   id: vulpkanin
-  speciesBase: Vulpkanin
   speciesSprite:
     Chest:
-      sprite: Mobs/Species/Human/parts.rsi
+      sprite: AnthroSystem/Mobs/Species/vulpkanin.rsi
       state: torso_m
     Head:
       sprite: AnthroSystem/Mobs/Species/vulpkanin.rsi
       state: head_m
     RArm:
-      sprite: Mobs/Species/Human/parts.rsi
+      sprite: AnthroSystem/Mobs/Species/vulpkanin.rsi
       state: r_arm
     LArm:
-      sprite: Mobs/Species/Human/parts.rsi
+      sprite: AnthroSystem/Mobs/Species/vulpkanin.rsi
       state: l_arm
     RLeg:
-      sprite: Mobs/Species/Human/parts.rsi
+      sprite: AnthroSystem/Mobs/Species/vulpkanin.rsi
       state: r_leg
     LLeg:
-      sprite: Mobs/Species/Human/parts.rsi
+      sprite: AnthroSystem/Mobs/Species/vulpkanin.rsi
       state: l_leg
     LHand:
-      sprite: Mobs/Species/Human/parts.rsi
+      sprite: AnthroSystem/Mobs/Species/vulpkanin.rsi
       state: l_hand
     RHand:
-      sprite: Mobs/Species/Human/parts.rsi
+      sprite: AnthroSystem/Mobs/Species/vulpkanin.rsi
       state: r_hand
     LFoot:
-      sprite: Mobs/Species/Human/parts.rsi
+      sprite: AnthroSystem/Mobs/Species/vulpkanin.rsi
       state: l_foot
     RFoot:
-      sprite: Mobs/Species/Human/parts.rsi
+      sprite: AnthroSystem/Mobs/Species/vulpkanin.rsi
       state: r_foot

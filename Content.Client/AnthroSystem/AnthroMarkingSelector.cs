@@ -16,12 +16,13 @@ namespace Content.Client.AnthroSystem
     public sealed class AnthroMarkingPicker : Control
     {
         [Dependency] private readonly AnthroMarkingManager _markingManager = default!;
+        [Dependency] private readonly AnthroSpeciesManager _speciesManager = default!;
 
         // temporarily, as a treat
         // maybe use this information to create
         // a 'realistic' enum of skin colors?
         public Action<Color>? OnBodyColorChange;
-        public Action<AnthroSpeciesBase>? OnSpeciesSelect;
+        public Action<string>? OnSpeciesSelect;
         public Action<List<AnthroMarking>>? OnMarkingAdded;
         public Action<List<AnthroMarking>>? OnMarkingRemoved;
         public Action<List<AnthroMarking>>? OnMarkingColorChange;
@@ -101,11 +102,11 @@ namespace Content.Client.AnthroSystem
                 Orientation = LayoutOrientation.Horizontal,
                 SeparationOverride = 5
             };
-            foreach (var species in Enum.GetValues<AnthroSpeciesBase>())
+            foreach (var species in _speciesManager.AvailableSpecies())
             {
                 var button = new Button
                 {
-                    Text = species.ToString(),
+                    Text = species,
                     HorizontalExpand = true
                 };
                 button.OnPressed += args =>
@@ -241,7 +242,7 @@ namespace Content.Client.AnthroSystem
             }
         }
 
-        private void SetSpecies(AnthroSpeciesBase species) => OnSpeciesSelect?.Invoke(species);
+        private void SetSpecies(string species) => OnSpeciesSelect?.Invoke(species);
 
         private void BodyColorChanged()
         {

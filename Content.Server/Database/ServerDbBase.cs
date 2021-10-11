@@ -177,10 +177,6 @@ namespace Content.Server.Database
                 markings.Add(marking);
             }
 
-            var speciesBase = AnthroSpeciesBase.Human;
-            if (Enum.TryParse<AnthroSpeciesBase>(profile.SpeciesBase, true, out var speciesBaseVal))
-                speciesBase = speciesBaseVal;
-
             // ANTHROSYSTEM MODIFICATION
 
             return new HumanoidCharacterProfile(
@@ -198,7 +194,7 @@ namespace Content.Server.Database
                     Color.FromHex(profile.SkinColor),
                     // ANTHROSYSTEM MODIFICATION
                     markings,
-                    speciesBase
+                    profile.SpeciesBase
                 ),
                 clothing,
                 backpack,
@@ -245,7 +241,7 @@ namespace Content.Server.Database
                 // NullRef issues when it's put
                 // into its own table)
                 Markings = markings,
-                SpeciesBase = appearance.SpeciesBase.ToString(),
+                SpeciesBase = appearance.SpeciesBase,
                 // ANTHROSYSTEM MODIFICATION
 
                 Slot = slot,

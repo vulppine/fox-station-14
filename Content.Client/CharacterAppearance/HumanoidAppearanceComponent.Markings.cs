@@ -19,7 +19,7 @@ namespace Content.Client.CharacterAppearance
 
         private Dictionary<HumanoidVisualLayers, List<AnthroMarking>> _activeMarkings = new();
         // the default body is a human body, so they always spawn with human parts
-        private AnthroSpeciesBase _lastBase = AnthroSpeciesBase.Human;
+        private string _lastBase = AnthroSpeciesManager.DefaultBase;
 
         public static HumanoidVisualLayers[] actualBodyParts =
         {
