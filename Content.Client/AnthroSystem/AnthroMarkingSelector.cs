@@ -41,6 +41,7 @@ namespace Content.Client.AnthroSystem
         private readonly Control _colorContainer;
 
         private readonly OptionButton _speciesButton;
+        private readonly OptionButton _markingCategoryButton;
 
         private readonly Button _addMarkingButton;
         private readonly Button _upRankMarkingButton;
@@ -254,7 +255,7 @@ namespace Content.Client.AnthroSystem
         }
 
         private void SetSpecies(string species) => OnSpeciesSelect?.Invoke(species);
-        
+
         private void OnCategoryChange(OptionButton.ItemSelectedEventArgs category)
         {
             _markingCategoryButton.SelectId(category.Id);
