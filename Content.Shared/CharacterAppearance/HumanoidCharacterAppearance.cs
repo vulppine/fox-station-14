@@ -6,6 +6,8 @@ using Robust.Shared.IoC;
 using Robust.Shared.Maths;
 using Robust.Shared.Random;
 using Robust.Shared.Serialization;
+using Robust.Shared.Serialization.Manager.Attributes;
+using Robust.Shared.ViewVariables;
 
 namespace Content.Shared.CharacterAppearance
 {
@@ -62,7 +64,11 @@ namespace Content.Shared.CharacterAppearance
         public Color EyeColor { get; }
         public Color SkinColor { get; }
         // ANTHROSYSTEM MODIFICATION
+        [DataField("markings")]
+        [ViewVariables]
         public IReadOnlyList<AnthroMarking> Markings => _markings;
+        [DataField("speciesBase")]
+        [ViewVariables]
         public AnthroSpeciesBase SpeciesBase { get; }
         // ANTHROSYSTEM MODIFICATION
 
@@ -182,13 +188,13 @@ namespace Content.Shared.CharacterAppearance
             // ANTHROSYSTEM MODIFICATION
             var markingManager = IoCManager.Resolve<AnthroMarkingManager>();
             List<AnthroMarking> validMarkings = new();
-            foreach (var marking in appearance.Markings)
+            foreach (var m in appearance.Markings)
             {
-                if (markingManager.IsValidMarking(marking.MarkingId, out AnthroMarkingPrototype? validMarkingPrototype))
+                AnthroMarking marking = m;
+                if (markingManager.IsValidMarking(ref marking, out AnthroMarkingPrototype? validMarkingPrototype))
                 {
                     AnthroMarking validMarking = validMarkingPrototype.AsMarking();
-                    validMarking.MarkingColor = marking.MarkingColor;
-                    validMarkings.Add(validMarking);
+                    validMarkings.Add(new AnthroMarking(validMarking.MarkingId, marking.MarkingColors));
                 }
             }
             // ANTHROSYSTEM MODIFICATION

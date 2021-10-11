@@ -37,9 +37,11 @@ namespace Content.Client.AnthroSystem
 
 
         private readonly Control _colorContainer;
+        /*
         private readonly ColorSlider _colorSliderR;
         private readonly ColorSlider _colorSliderG;
         private readonly ColorSlider _colorSliderB;
+        */
 
         // can there be something else other than this???
         // maybe make a whole ass drop down menu or
@@ -49,6 +51,8 @@ namespace Content.Client.AnthroSystem
         private readonly Button _upRankMarkingButton;
         private readonly Button _downRankMarkingButton;
         private readonly Button _removeMarkingButton;
+
+        private List<Color> _currentMarkingColors = new();
 
         private ItemList.Item? _selectedMarking;
         private ItemList.Item? _selectedUnusedMarking;
@@ -62,13 +66,20 @@ namespace Content.Client.AnthroSystem
             _selectedUnusedMarking = null;
 
             Logger.DebugS("AnthroMarkingSelector", $"New marking set: {_usedMarkingList}");
-            foreach (var marking in _usedMarkingList)
+            // foreach (var m in _usedMarkingList)
+            for (int i = 0; i < _usedMarkingList.Count; i++)
             {
-                if (_markingManager.IsValidMarking(marking.MarkingId, out AnthroMarkingPrototype? newMarking))
+                AnthroMarking marking = _usedMarkingList[i];
+                if (_markingManager.IsValidMarking(ref marking, out AnthroMarkingPrototype? newMarking))
                 {
-                    var _item = _usedMarkings.AddItem(newMarking.ID, newMarking.Sprite.Frame0());
+                    // TODO: Composite sprite preview, somehow.
+                    var _item = _usedMarkings.AddItem(newMarking.ID, newMarking.Sprites[0].Frame0());
                     _item.Metadata = newMarking;
-                    _item.IconModulate = marking.MarkingColor;
+                    _item.IconModulate = marking.MarkingColors[0];
+                    if (marking.MarkingColors.Count != _usedMarkingList[i].MarkingColors.Count)
+                    {
+                        _usedMarkingList[i] = new AnthroMarking(marking.MarkingId, marking.MarkingColors);
+                    }
                 }
 
                 foreach (var unusedMarking in _unusedMarkings)
@@ -170,14 +181,7 @@ namespace Content.Client.AnthroSystem
                 VerticalExpand = true,
                 MinSize = (300, 250)
             };
-            _usedMarkings.OnItemSelected += item =>
-            {
-               _selectedMarking = _usedMarkings[item.ItemIndex];
-               _colorSliderR!.ColorValue = _selectedMarking.IconModulate.RByte;
-               _colorSliderG!.ColorValue = _selectedMarking.IconModulate.GByte;
-               _colorSliderB!.ColorValue = _selectedMarking.IconModulate.BByte;
-               _colorContainer!.Visible = true;
-            };
+            _usedMarkings.OnItemSelected += OnUsedMarkingSelected;
 
             var buttonRankingContainer = new BoxContainer
             {
@@ -217,6 +221,7 @@ namespace Content.Client.AnthroSystem
                 Visible = false
             };
             vBox.AddChild(_colorContainer);
+            /*
             _colorContainer.AddChild(new Label { Text = "Current marking color:" });
             _colorContainer.AddChild(_colorSliderR = new ColorSlider(StyleNano.StyleClassSliderRed));
             _colorContainer.AddChild(_colorSliderG = new ColorSlider(StyleNano.StyleClassSliderGreen));
@@ -226,6 +231,7 @@ namespace Content.Client.AnthroSystem
             _colorSliderR.OnValueChanged += colorChanged;
             _colorSliderG.OnValueChanged += colorChanged;
             _colorSliderB.OnValueChanged += colorChanged;
+            */
 
 
         }
@@ -236,9 +242,65 @@ namespace Content.Client.AnthroSystem
             foreach (var marking in markings)
             {
                 Logger.DebugS("AnthroMarkingSelector", $"Adding marking {marking.ID}");
-                var item = _unusedMarkings.AddItem($"{marking.ID} ({marking.BodyPart})", marking.Sprite.Frame0());
+                var item = _unusedMarkings.AddItem($"{marking.ID} ({marking.BodyPart})", marking.Sprites[0].Frame0());
                 item.Metadata = marking;
             }
+        }
+
+        private void OnUsedMarkingSelected(ItemList.ItemListSelectedEventArgs item)
+        {
+            _selectedMarking = _usedMarkings[item.ItemIndex];
+            var prototype = (AnthroMarkingPrototype) _selectedMarking.Metadata!;
+            _currentMarkingColors.Clear();
+            _colorContainer.RemoveAllChildren();
+            List<List<ColorSlider>> colorSliders = new();
+            for (int i = 0; i < prototype.Sprites.Count; i++)
+            {
+                var colorContainer = new BoxContainer
+                {
+                    Orientation = LayoutOrientation.Vertical,
+                };
+
+                _colorContainer.AddChild(colorContainer);
+
+                List<ColorSlider> sliders = new();
+                ColorSlider colorSliderR = new ColorSlider(StyleNano.StyleClassSliderRed);
+                ColorSlider colorSliderG = new ColorSlider(StyleNano.StyleClassSliderGreen);
+                ColorSlider colorSliderB = new ColorSlider(StyleNano.StyleClassSliderBlue);
+
+                colorContainer.AddChild(new Label { Text = $"{prototype.MarkingPartNames[i]} color:" });
+                colorContainer.AddChild(colorSliderR);
+                colorContainer.AddChild(colorSliderG);
+                colorContainer.AddChild(colorSliderB);
+
+                var currentColor = new Color(
+                    _usedMarkingList[item.ItemIndex].MarkingColors[i].RByte,
+                    _usedMarkingList[item.ItemIndex].MarkingColors[i].GByte,
+                    _usedMarkingList[item.ItemIndex].MarkingColors[i].BByte
+                );
+                _currentMarkingColors.Add(currentColor);
+                int colorIndex = _currentMarkingColors.IndexOf(currentColor);
+
+                colorSliderR.ColorValue = currentColor.RByte;
+                colorSliderG.ColorValue = currentColor.GByte;
+                colorSliderB.ColorValue = currentColor.BByte;
+
+                Action colorChanged = delegate()
+                {
+                    _currentMarkingColors[colorIndex] = new Color(
+                        colorSliderR.ColorValue,
+                        colorSliderG.ColorValue,
+                        colorSliderB.ColorValue
+                    );
+
+                    ColorChanged(colorIndex);
+                };
+                colorSliderR.OnValueChanged += colorChanged;
+                colorSliderG.OnValueChanged += colorChanged;
+                colorSliderB.OnValueChanged += colorChanged;
+            }
+
+            _colorContainer.Visible = true;
         }
 
         private void SetSpecies(AnthroSpeciesBase species) => OnSpeciesSelect?.Invoke(species);
@@ -255,7 +317,7 @@ namespace Content.Client.AnthroSystem
         }
 
 
-        private void ColorChanged()
+        private void ColorChanged(int colorIndex)
         {
             if (_selectedMarking is null) return;
             var markingPrototype = (AnthroMarkingPrototype) _selectedMarking.Metadata!;
@@ -263,14 +325,16 @@ namespace Content.Client.AnthroSystem
 
             if (markingIndex < 0) return; // ???
 
+            /*
             var newColor = new Color(
-                _colorSliderR.ColorValue,
-                _colorSliderG.ColorValue,
-                _colorSliderB.ColorValue
+                _selectedMarkingColor[0].ColorValue,
+                _selectedMarkingColor[1].ColorValue,
+                _selectedMarkingColor[2].ColorValue
             );
+            */
 
-            _selectedMarking.IconModulate = newColor;
-            _usedMarkingList[markingIndex].MarkingColor = newColor;
+            _selectedMarking.IconModulate = _currentMarkingColors[colorIndex];
+            _usedMarkingList[markingIndex].SetColor(colorIndex, _currentMarkingColors[colorIndex]);
             OnMarkingColorChange?.Invoke(_usedMarkingList);
         }
 
@@ -284,7 +348,7 @@ namespace Content.Client.AnthroSystem
             Logger.DebugS("AnthroMarkingSelector", $"{_usedMarkingList}");
 
             _unusedMarkings.Remove(_selectedUnusedMarking);
-            var item = _usedMarkings.AddItem(marking.ID, marking.Sprite.Frame0());
+            var item = _usedMarkings.AddItem(marking.ID, marking.Sprites[0].Frame0());
             item.Metadata = marking;
 
             _selectedUnusedMarking = null;
@@ -299,7 +363,7 @@ namespace Content.Client.AnthroSystem
             _usedMarkingList.Remove(marking.AsMarking());
             _usedMarkings.Remove(_selectedMarking);
 
-            var item = _unusedMarkings.AddItem(marking.ID, marking.Sprite.Frame0());
+            var item = _unusedMarkings.AddItem(marking.ID, marking.Sprites[0].Frame0());
             item.Metadata = marking;
             _selectedMarking = null;
             _colorContainer.Visible = false;
