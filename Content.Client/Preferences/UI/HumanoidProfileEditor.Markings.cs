@@ -68,7 +68,7 @@ namespace Content.Client.Preferences.UI
             if (Profile is null)
                 return;
 
-            _markingPicker.SetData(Profile.Appearance.Markings.ToList(), Profile.Appearance.SkinColor);
+            _markingPicker.SetData(Profile.Appearance.Markings.ToList(), Profile.Appearance.SkinColor, Profile.Appearance.SpeciesBase);
         }
 
     }

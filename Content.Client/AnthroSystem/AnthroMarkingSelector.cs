@@ -17,12 +17,13 @@ namespace Content.Client.AnthroSystem
     public sealed class AnthroMarkingPicker : Control
     {
         [Dependency] private readonly AnthroMarkingManager _markingManager = default!;
+        [Dependency] private readonly AnthroSpeciesManager _speciesManager = default!;
 
         // temporarily, as a treat
         // maybe use this information to create
         // a 'realistic' enum of skin colors?
         public Action<Color>? OnBodyColorChange;
-        public Action<AnthroSpeciesBase>? OnSpeciesSelect;
+        public Action<string>? OnSpeciesSelect;
         public Action<List<AnthroMarking>>? OnMarkingAdded;
         public Action<List<AnthroMarking>>? OnMarkingRemoved;
         public Action<List<AnthroMarking>>? OnMarkingColorChange;
@@ -39,11 +40,8 @@ namespace Content.Client.AnthroSystem
 
         private readonly Control _colorContainer;
 
-        // can there be something else other than this???
-        // maybe make a whole ass drop down menu or
-        // whatever, Not This Shit
-        private List<Button> _speciesButtons = new();
-        private readonly OptionButton _markingCategoryButton;
+        private readonly OptionButton _speciesButton;
+
         private readonly Button _addMarkingButton;
         private readonly Button _upRankMarkingButton;
         private readonly Button _downRankMarkingButton;
@@ -55,9 +53,11 @@ namespace Content.Client.AnthroSystem
         private ItemList.Item? _selectedUnusedMarking;
         private AnthroMarkingCategories _selectedMarkingCategory = AnthroMarkingCategories.Chest;
         private List<AnthroMarking> _usedMarkingList = new();
+
+        private List<string> _availableSpecies = new();
         private List<AnthroMarkingCategories> _markingCategories = Enum.GetValues<AnthroMarkingCategories>().ToList();
 
-        public void SetData(List<AnthroMarking> newMarkings, Color newBodyColor)
+        public void SetData(List<AnthroMarking> newMarkings, Color newBodyColor, string newSpecies)
         {
             _usedMarkingList = newMarkings;
             _usedMarkings.Clear();
@@ -94,6 +94,8 @@ namespace Content.Client.AnthroSystem
             _bodyColorSliderR.ColorValue = newBodyColor.RByte;
             _bodyColorSliderG.ColorValue = newBodyColor.GByte;
             _bodyColorSliderB.ColorValue = newBodyColor.BByte;
+
+            _speciesButton.SelectId(_availableSpecies.IndexOf(newSpecies));
         }
 
         public AnthroMarkingPicker()
@@ -111,18 +113,21 @@ namespace Content.Client.AnthroSystem
                 Orientation = LayoutOrientation.Horizontal,
                 SeparationOverride = 5
             };
-            foreach (var species in Enum.GetValues<AnthroSpeciesBase>())
+            _speciesButton = new OptionButton
             {
-                var button = new Button
-                {
-                    Text = species.ToString(),
-                    HorizontalExpand = true
-                };
-                button.OnPressed += args =>
-                    SetSpecies(species);
-                _speciesButtons.Add(button);
-                speciesButtonContainer.AddChild(button);
-            }
+                HorizontalExpand = true
+            };
+            _availableSpecies = _speciesManager.AvailableSpecies();
+            for (int i = 0; i < _availableSpecies.Count; i++)
+                _speciesButton.AddItem(_availableSpecies[i], i);
+
+            _speciesButton.OnItemSelected += args =>
+            {
+                _speciesButton.SelectId(args.Id);
+                SetSpecies(_availableSpecies[args.Id]);
+            };
+            speciesButtonContainer.AddChild(new Label { Text = "Species sprite base:" });
+            speciesButtonContainer.AddChild(_speciesButton);
             vBox.AddChild(speciesButtonContainer);
 
 
@@ -248,6 +253,8 @@ namespace Content.Client.AnthroSystem
             }
         }
 
+        private void SetSpecies(string species) => OnSpeciesSelect?.Invoke(species);
+        
         private void OnCategoryChange(OptionButton.ItemSelectedEventArgs category)
         {
             _markingCategoryButton.SelectId(category.Id);
@@ -310,8 +317,6 @@ namespace Content.Client.AnthroSystem
 
             _colorContainer.Visible = true;
         }
-
-        private void SetSpecies(AnthroSpeciesBase species) => OnSpeciesSelect?.Invoke(species);
 
         private void BodyColorChanged()
         {
