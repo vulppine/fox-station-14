@@ -42,10 +42,8 @@ namespace Content.Client.AnthroSystem
         private readonly ColorSlider _colorSliderG;
         private readonly ColorSlider _colorSliderB;
 
-        // can there be something else other than this???
-        // maybe make a whole ass drop down menu or
-        // whatever, Not This Shit
-        private List<Button> _speciesButtons = new();
+        private readonly OptionButton _speciesButton;
+
         private readonly Button _addMarkingButton;
         private readonly Button _upRankMarkingButton;
         private readonly Button _downRankMarkingButton;
@@ -54,8 +52,9 @@ namespace Content.Client.AnthroSystem
         private ItemList.Item? _selectedMarking;
         private ItemList.Item? _selectedUnusedMarking;
         private List<AnthroMarking> _usedMarkingList = new();
+        private List<string> _availableSpecies = new();
 
-        public void SetData(List<AnthroMarking> newMarkings, Color newBodyColor)
+        public void SetData(List<AnthroMarking> newMarkings, Color newBodyColor, string newSpecies)
         {
             _usedMarkingList = newMarkings;
             _usedMarkings.Clear();
@@ -85,6 +84,8 @@ namespace Content.Client.AnthroSystem
             _bodyColorSliderR.ColorValue = newBodyColor.RByte;
             _bodyColorSliderG.ColorValue = newBodyColor.GByte;
             _bodyColorSliderB.ColorValue = newBodyColor.BByte;
+
+            _speciesButton.SelectId(_availableSpecies.IndexOf(newSpecies));
         }
 
         public AnthroMarkingPicker()
@@ -102,18 +103,21 @@ namespace Content.Client.AnthroSystem
                 Orientation = LayoutOrientation.Horizontal,
                 SeparationOverride = 5
             };
-            foreach (var species in _speciesManager.AvailableSpecies())
+            _speciesButton = new OptionButton
             {
-                var button = new Button
-                {
-                    Text = species,
-                    HorizontalExpand = true
-                };
-                button.OnPressed += args =>
-                    SetSpecies(species);
-                _speciesButtons.Add(button);
-                speciesButtonContainer.AddChild(button);
-            }
+                HorizontalExpand = true
+            };
+            _availableSpecies = _speciesManager.AvailableSpecies();
+            for (int i = 0; i < _availableSpecies.Count; i++)
+                _speciesButton.AddItem(_availableSpecies[i], i);
+
+            _speciesButton.OnItemSelected += args =>
+            {
+                _speciesButton.SelectId(args.Id);
+                SetSpecies(_availableSpecies[args.Id]);
+            };
+            speciesButtonContainer.AddChild(new Label { Text = "Species sprite base:" });
+            speciesButtonContainer.AddChild(_speciesButton);
             vBox.AddChild(speciesButtonContainer);
 
 

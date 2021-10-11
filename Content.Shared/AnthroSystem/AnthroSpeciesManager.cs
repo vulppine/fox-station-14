@@ -38,28 +38,5 @@ namespace Content.Shared.AnthroSystem
 
             return true;
         }
-        /*
-        public bool IsValidSpeciesSprite(AnthroSpeciesBase species, [NotNullWhen(true)] out SpriteSpecifier? speciesSprite)
-        {
-            switch (_index[species])
-            {
-                case SpriteSpecifier.Rsi sprite:
-                    speciesSprite = sprite;
-                    return true;
-            }
-
-            speciesSprite = null;
-            return false;
-        }
-        */
-
-        /* this is implicitly valid because speciesParts is always required
-        public bool IsValidSpecies(string species, [NotNullWhen(true)] out Dictionary<HumanoidVisualLayers, SpriteSpecifier?>? speciesResult)
-        {
-            speciesResult = null;
-            if (!Enum.TryParse(typeof(AnthroSpeciesBase), species, out var speciesBase)) return false;
-
-        }
-        */
     }
 }
