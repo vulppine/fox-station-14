@@ -1,36 +1,60 @@
 - type: anthroMarking
   id: MarkingTestSquare
   bodyPart: Chest
-  sprite:
-    sprite: AnthroSystem/Mobs/Customization/markings.rsi
-    state: square
+  markingCategory: Chest
+  markingLayerNames: [square]
+  sprites:
+    - sprite: AnthroSystem/Mobs/Customization/markings.rsi
+      state: square
 - type: anthroMarking
   id: PawSocks
+  markingCategory: Overlay
   bodyPart: RFoot #highest possible layer
-  sprite:
-    sprite: AnthroSystem/Mobs/Customization/markings.rsi
-    state: pawsocks
+  markingLayerNames: [socks]
+  sprites:
+    - sprite: AnthroSystem/Mobs/Customization/markings.rsi
+      state: pawsocks
 - type: anthroMarking
   id: VulpankinTail
   bodyPart: Hair
-  sprite:
-    sprite: AnthroSystem/Mobs/Customization/markings.rsi
-    state: vulp_tail
+  markingCategory: Tail
+  markingLayerNames: [tail]
+  sprites:
+    - sprite: AnthroSystem/Mobs/Customization/markings.rsi
+      state: vulp_tail
 - type: anthroMarking
   id: VulpkaninEar
   bodyPart: Hair
-  sprite:
-    sprite: AnthroSystem/Mobs/Customization/markings.rsi
-    state: vulp_ear
+  markingCategory: Ears
+  markingLayerNames: [Outer Ear, Inner Ear]
+  sprites:
+    - sprite: AnthroSystem/Mobs/Customization/markings.rsi
+      state: vulp_ear
+    - sprite: AnthroSystem/Mobs/Customization/markings.rsi
+      state: vulp_ear_inner
+- type: anthroMarking
+  id: WolfTail
+  bodyPart: Hair
+  markingCategory: Tail
+  markingLayerNames: [Tail, Tail Tip]
+  sprites:
+    - sprite: AnthroSystem/Mobs/Customization/markings.rsi
+      state: wolf_tail
+    - sprite: AnthroSystem/Mobs/Customization/markings.rsi
+      state: wolf_tail_inner
 - type: anthroMarking
   id: VulpkaninBelly
   bodyPart: Chest
-  sprite:
-    sprite: AnthroSystem/Mobs/Customization/markings.rsi
-    state: vulp_belly-torso
+  markingCategory: Chest
+  markingLayerNames: [chest]
+  sprites:
+    - sprite: AnthroSystem/Mobs/Customization/markings.rsi
+      state: vulp_belly-torso
 - type: anthroMarking
   id: VulpkaninFace
   bodyPart: Head
-  sprite:
-    sprite: AnthroSystem/Mobs/Customization/markings.rsi
-    state: vulp_face
+  markingCategory: Head
+  markingLayerNames: [muzzle]
+  sprites:
+    - sprite: AnthroSystem/Mobs/Customization/markings.rsi
+      state: vulp_face

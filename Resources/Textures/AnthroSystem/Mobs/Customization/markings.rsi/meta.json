@@ -6,7 +6,10 @@
 		{"name": "pawsocks", "directions": 4, "delays": [[1.0], [1.0], [1.0], [1.0]]},
 		{"name": "vulp_tail", "directions": 4, "delays": [[1.0], [1.0], [1.0], [1.0]]},
 		{"name": "vulp_ear", "directions": 4, "delays": [[1.0], [1.0], [1.0], [1.0]]},
+		{"name": "vulp_ear_inner", "directions": 4, "delays": [[1.0], [1.0], [1.0], [1.0]]},
 		{"name": "vulp_belly-torso", "directions": 4, "delays": [[1.0], [1.0], [1.0], [1.0]]},
-		{"name": "vulp_face", "directions": 4, "delays": [[1.0], [1.0], [1.0], [1.0]]}
+		{"name": "vulp_face", "directions": 4, "delays": [[1.0], [1.0], [1.0], [1.0]]},
+		{"name": "wolf_tail", "directions": 4, "delays": [[1.0], [1.0], [1.0], [1.0]]},
+		{"name": "wolf_tail_inner", "directions": 4, "delays": [[1.0], [1.0], [1.0], [1.0]]}
 	]
 }

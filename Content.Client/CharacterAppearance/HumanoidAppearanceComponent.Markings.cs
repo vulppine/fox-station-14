@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Content.Shared.AnthroSystem;
 using Content.Shared.Body.Components;
-using Content.Shared.Body.Part;
 using Content.Shared.CharacterAppearance;
 using Robust.Client.GameObjects;
 using Robust.Shared.IoC;
@@ -18,6 +17,7 @@ namespace Content.Client.CharacterAppearance
         [Dependency] private readonly AnthroSpeciesManager _speciesManager = default!;
 
         private Dictionary<HumanoidVisualLayers, List<AnthroMarking>> _activeMarkings = new();
+        private IReadOnlyList<AnthroMarking>? _lastMarkingSet;
         // the default body is a human body, so they always spawn with human parts
         private string _lastBase = AnthroSpeciesManager.DefaultBase;
 
@@ -35,13 +35,29 @@ namespace Content.Client.CharacterAppearance
             HumanoidVisualLayers.LFoot
         };
 
+        // This should *probably* be in the main body.
+        // Maybe if this is ever done upstream.
+        protected override void Initialize()
+        {
+            base.Initialize();
+
+            InitAnthroSystem();
+        }
 
         private void InitAnthroSystem()
         {
             foreach (HumanoidVisualLayers layer in actualBodyParts)
             {
+                Logger.DebugS("AnthroSystem", $"Activating marking tracking for {layer}");
                 _activeMarkings.Add(layer, new List<AnthroMarking>());
             }
+        }
+
+        private void ToggleMarkingVisibility(SpriteComponent body, HumanoidVisualLayers layer, bool toggle)
+        {
+            if (_activeMarkings.TryGetValue(layer, out List<AnthroMarking>? layerMarkings))
+                foreach (AnthroMarking marking in layerMarkings)
+                    body.LayerSetVisible(marking.MarkingId, toggle);
         }
 
         private void UpdateAnthroSystem()
@@ -64,7 +80,6 @@ namespace Content.Client.CharacterAppearance
                         if (sprite is not null) partSprite.LayerSetSprite(layer, sprite);
                 }
 
-
                 Logger.DebugS("AnthroSystem", "Recoloring body now.");
                 foreach (var part in actualBodyParts)
                 {
@@ -80,36 +95,43 @@ namespace Content.Client.CharacterAppearance
                 Logger.DebugS("AnthroSystem", "Rendering markings now.");
                 Logger.DebugS("AnthroSystem", $"Marking count: {Appearance.Markings.Count}");
 
-                foreach (var marking in Appearance.Markings)
-                {
-                    // there is NO EASY WAY to do this
-                    // so we just iterate over every single
-                    // part, and attempt to remove any layers
-                    // that match
-                    if (!partSprite.LayerMapTryGet(marking.MarkingId, out var layer)) continue;
-                    partSprite.RemoveLayer(layer);
-                    partSprite.LayerMapRemove(marking.MarkingId);
-                }
 
                 // Top -> Bottom ordering
                 foreach (var marking in Appearance.Markings.Reverse())
                 {
-                    if (!_markingManager.IsValidMarking(marking.MarkingId, out AnthroMarkingPrototype? markingPrototype))
+                    if (!_markingManager.IsValidMarking(marking, out AnthroMarkingPrototype? markingPrototype))
                     {
                         Logger.DebugS("AnthroSystem", $"Invalid marking {marking.MarkingId}");
                         continue;
                     }
 
+
                     if (!partSprite.LayerMapTryGet(markingPrototype.BodyPart, out int targetLayer))
                     {
                         Logger.DebugS("AnthroSystem", "Could not get the target layer");
+                        continue;
                     }
 
-                    Logger.DebugS("AnthroSystem", $"Adding marking {marking.MarkingId} to layer {targetLayer}");
-                    int layer = partSprite.AddLayer(markingPrototype.Sprite, targetLayer + 1);
-                    partSprite.LayerMapSet(markingPrototype.ID, layer);
-                    Logger.DebugS("AnthroSystem", $"Marking added {marking.MarkingId} to layer {layer}");
-                    partSprite.LayerSetColor(markingPrototype.ID, marking.MarkingColor);
+                    Logger.DebugS("AnthroSystem", $"Adding {markingPrototype.Sprites.Count()} markings from {markingPrototype.ID} to layer {targetLayer}");
+
+                    for (int i = 0; i < markingPrototype.Sprites.Count(); i++)
+                    {
+                        string layerId = markingPrototype.ID + markingPrototype.MarkingPartNames[i];
+
+                        if (partSprite.LayerMapTryGet(layerId, out var existingLayer))
+                        {
+                            Logger.DebugS("AnthroSystem", $"Deduplicating {markingPrototype.MarkingPartNames[i]} now from {existingLayer}");
+                            partSprite.RemoveLayer(existingLayer);
+                            partSprite.LayerMapRemove(marking.MarkingId);
+                        }
+                        Logger.DebugS("AnthroSystem", $"Adding part {markingPrototype.MarkingPartNames[i]} now to {targetLayer + i + 1}");
+
+                        int layer = partSprite.AddLayer(markingPrototype.Sprites[i], targetLayer + i + 1);
+                        partSprite.LayerMapSet(layerId, layer);
+                        partSprite.LayerSetColor(layerId, marking.MarkingColors[i]);
+                    }
+
+                    Logger.DebugS("AnthroSystem", $"Marking added: {markingPrototype.ID}");
                     // _activeMarkings[markingPrototype.BodyPart].Add(marking);
                 }
             }

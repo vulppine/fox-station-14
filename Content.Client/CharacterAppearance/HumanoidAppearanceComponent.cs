@@ -42,7 +42,6 @@ namespace Content.Client.CharacterAppearance
         {
             base.Startup();
 
-            InitAnthroSystem(); // AnthroSystem Modification
             UpdateLooks();
         }
 
@@ -127,7 +126,10 @@ namespace Content.Client.CharacterAppearance
             var layers = args.Part.ToHumanoidLayers();
             // TODO BODY Layer color, sprite and state
             foreach (var layer in layers)
+            {
+                ToggleMarkingVisibility(sprite, layer, true); // AnthroSystem modification
                 sprite.LayerSetVisible(layer, true);
+            }
         }
 
         public void BodyPartRemoved(BodyPartRemovedEventArgs args)
@@ -145,7 +147,10 @@ namespace Content.Client.CharacterAppearance
             var layers = args.Part.ToHumanoidLayers();
             // TODO BODY Layer color, sprite and state
             foreach (var layer in layers)
+            {
+                ToggleMarkingVisibility(sprite, layer, false); // AnthroSystem modification
                 sprite.LayerSetVisible(layer, false);
+            }
         }
     }
 }
