@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Content.Shared.Body.Part;
 using Content.Shared.CharacterAppearance;
 using Robust.Shared.Localization;
 using Robust.Shared.Prototypes;
@@ -22,6 +21,9 @@ namespace Content.Shared.AnthroSystem
 
         [DataField("markingLayerNames", required: true)]
         public List<string> MarkingPartNames { get; } = default!;
+
+        [DataField("markingCategory", required: true)]
+        public AnthroMarkingCategories MarkingCategory { get; } = default!;
 
         [DataField("sprites", required: true)]
         public List<SpriteSpecifier> Sprites { get; private set; } = default!;

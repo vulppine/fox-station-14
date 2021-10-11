@@ -1,12 +1,14 @@
 - type: anthroMarking
   id: MarkingTestSquare
   bodyPart: Chest
+  markingCategory: Chest
   markingLayerNames: [square]
   sprites:
     - sprite: AnthroSystem/Mobs/Customization/markings.rsi
       state: square
 - type: anthroMarking
   id: PawSocks
+  markingCategory: Overlay
   bodyPart: RFoot #highest possible layer
   markingLayerNames: [socks]
   sprites:
@@ -15,6 +17,7 @@
 - type: anthroMarking
   id: VulpankinTail
   bodyPart: Hair
+  markingCategory: Tail
   markingLayerNames: [tail]
   sprites:
     - sprite: AnthroSystem/Mobs/Customization/markings.rsi
@@ -22,6 +25,7 @@
 - type: anthroMarking
   id: VulpkaninEar
   bodyPart: Hair
+  markingCategory: Ears
   markingLayerNames: [Outer Ear, Inner Ear]
   sprites:
     - sprite: AnthroSystem/Mobs/Customization/markings.rsi
@@ -31,6 +35,7 @@
 - type: anthroMarking
   id: WolfTail
   bodyPart: Hair
+  markingCategory: Tail
   markingLayerNames: [Tail, Tail Tip]
   sprites:
     - sprite: AnthroSystem/Mobs/Customization/markings.rsi
@@ -40,6 +45,7 @@
 - type: anthroMarking
   id: VulpkaninBelly
   bodyPart: Chest
+  markingCategory: Chest
   markingLayerNames: [chest]
   sprites:
     - sprite: AnthroSystem/Mobs/Customization/markings.rsi
@@ -47,6 +53,7 @@
 - type: anthroMarking
   id: VulpkaninFace
   bodyPart: Head
+  markingCategory: Head
   markingLayerNames: [muzzle]
   sprites:
     - sprite: AnthroSystem/Mobs/Customization/markings.rsi

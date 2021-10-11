@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Robust.Shared.IoC;
 using Robust.Shared.Log;
-using Robust.Shared.Maths;
 using Robust.Shared.Prototypes;
 
 namespace Content.Shared.AnthroSystem
@@ -12,20 +12,26 @@ namespace Content.Shared.AnthroSystem
         [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
 
         private readonly List<AnthroMarkingPrototype> _index = new();
+        private readonly Dictionary<AnthroMarkingCategories, List<AnthroMarkingPrototype>> _markingDict = new();
 
         public void Initialize()
         {
             _prototypeManager.PrototypesReloaded += OnPrototypeReload;
 
+            foreach (var category in Enum.GetValues<AnthroMarkingCategories>())
+                _markingDict.Add(category, new List<AnthroMarkingPrototype>());
+
             foreach (var prototype in _prototypeManager.EnumeratePrototypes<AnthroMarkingPrototype>())
             {
                 _index.Add(prototype);
+                _markingDict[prototype.MarkingCategory].Add(prototype);
             }
 
             // _index.Sort();
         }
 
         public IReadOnlyList<AnthroMarkingPrototype> Markings() => _index;
+        public IReadOnlyDictionary<AnthroMarkingCategories, List<AnthroMarkingPrototype>> CategorizedMarkings() => _markingDict;
 
         // the most DEVIOUS lick
         // mostly because i seriously don't like the whole out thing, but whatever

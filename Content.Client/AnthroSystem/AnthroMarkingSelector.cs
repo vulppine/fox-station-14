@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Content.Client.CharacterAppearance;
 using Content.Client.Stylesheets;
 using Content.Shared.AnthroSystem;
@@ -42,6 +43,7 @@ namespace Content.Client.AnthroSystem
         // maybe make a whole ass drop down menu or
         // whatever, Not This Shit
         private List<Button> _speciesButtons = new();
+        private readonly OptionButton _markingCategoryButton;
         private readonly Button _addMarkingButton;
         private readonly Button _upRankMarkingButton;
         private readonly Button _downRankMarkingButton;
@@ -51,7 +53,9 @@ namespace Content.Client.AnthroSystem
 
         private ItemList.Item? _selectedMarking;
         private ItemList.Item? _selectedUnusedMarking;
+        private AnthroMarkingCategories _selectedMarkingCategory = AnthroMarkingCategories.Chest;
         private List<AnthroMarking> _usedMarkingList = new();
+        private List<AnthroMarkingCategories> _markingCategories = Enum.GetValues<AnthroMarkingCategories>().ToList();
 
         public void SetData(List<AnthroMarking> newMarkings, Color newBodyColor)
         {
@@ -68,7 +72,7 @@ namespace Content.Client.AnthroSystem
                 if (_markingManager.IsValidMarking(marking, out AnthroMarkingPrototype? newMarking))
                 {
                     // TODO: Composite sprite preview, somehow.
-                    var _item = _usedMarkings.AddItem(newMarking.ID, newMarking.Sprites[0].Frame0());
+                    var _item = _usedMarkings.AddItem($"{newMarking.ID} ({newMarking.MarkingCategory})", newMarking.Sprites[0].Frame0());
                     _item.Metadata = newMarking;
                     _item.IconModulate = marking.MarkingColors[0];
                     if (marking.MarkingColors.Count != _usedMarkingList[i].MarkingColors.Count)
@@ -149,6 +153,17 @@ namespace Content.Client.AnthroSystem
             {
                 Orientation = LayoutOrientation.Vertical
             };
+            unusedMarkingsContainer.AddChild(new Label { Text = "Unused markings:" });
+            _markingCategoryButton = new OptionButton
+            {
+                HorizontalExpand = true
+            };
+            for (int i = 0; i < _markingCategories.Count; i++)
+            {
+                _markingCategoryButton.AddItem(_markingCategories[i].ToString(), i);
+            }
+            _markingCategoryButton.OnItemSelected +=  OnCategoryChange;
+            unusedMarkingsContainer.AddChild(_markingCategoryButton);
             _unusedMarkings = new ItemList
             {
                 VerticalExpand = true,
@@ -171,6 +186,7 @@ namespace Content.Client.AnthroSystem
             {
                 Orientation = LayoutOrientation.Vertical
             };
+            usedMarkingsContainer.AddChild(new Label { Text = "Current markings:" });
             _usedMarkings = new ItemList
             {
                 VerticalExpand = true,
@@ -220,13 +236,22 @@ namespace Content.Client.AnthroSystem
 
         public void Populate()
         {
-            var markings = _markingManager.Markings();
-            foreach (var marking in markings)
+            _unusedMarkings.Clear();
+            var markings = _markingManager.CategorizedMarkings();
+            foreach (var marking in markings[_selectedMarkingCategory])
             {
+                if (_usedMarkingList.Contains(marking.AsMarking())) continue;
                 Logger.DebugS("AnthroMarkingSelector", $"Adding marking {marking.ID}");
-                var item = _unusedMarkings.AddItem($"{marking.ID} ({marking.BodyPart})", marking.Sprites[0].Frame0());
+                var item = _unusedMarkings.AddItem($"{marking.ID}", marking.Sprites[0].Frame0());
                 item.Metadata = marking;
             }
+        }
+
+        private void OnCategoryChange(OptionButton.ItemSelectedEventArgs category)
+        {
+            _markingCategoryButton.SelectId(category.Id);
+            _selectedMarkingCategory = _markingCategories[category.Id];
+            Populate();
         }
 
         private void OnUsedMarkingSelected(ItemList.ItemListSelectedEventArgs item)
@@ -330,7 +355,7 @@ namespace Content.Client.AnthroSystem
             Logger.DebugS("AnthroMarkingSelector", $"{_usedMarkingList}");
 
             _unusedMarkings.Remove(_selectedUnusedMarking);
-            var item = _usedMarkings.AddItem(marking.ID, marking.Sprites[0].Frame0());
+            var item = _usedMarkings.AddItem($"{marking.ID} ({marking.MarkingCategory})", marking.Sprites[0].Frame0());
             item.Metadata = marking;
 
             _selectedUnusedMarking = null;
@@ -345,8 +370,11 @@ namespace Content.Client.AnthroSystem
             _usedMarkingList.Remove(marking.AsMarking());
             _usedMarkings.Remove(_selectedMarking);
 
-            var item = _unusedMarkings.AddItem(marking.ID, marking.Sprites[0].Frame0());
-            item.Metadata = marking;
+            if (marking.MarkingCategory == _selectedMarkingCategory)
+            {
+                var item = _unusedMarkings.AddItem($"{marking.ID}", marking.Sprites[0].Frame0());
+                item.Metadata = marking;
+            }
             _selectedMarking = null;
             _colorContainer.Visible = false;
             OnMarkingRemoved?.Invoke(_usedMarkingList);
