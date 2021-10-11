@@ -162,6 +162,7 @@ namespace Content.Client.AnthroSystem
             {
                 _markingCategoryButton.AddItem(_markingCategories[i].ToString(), i);
             }
+            _markingCategoryButton.SelectId(_markingCategories.IndexOf(AnthroMarkingCategories.Chest));
             _markingCategoryButton.OnItemSelected +=  OnCategoryChange;
             unusedMarkingsContainer.AddChild(_markingCategoryButton);
             _unusedMarkings = new ItemList
