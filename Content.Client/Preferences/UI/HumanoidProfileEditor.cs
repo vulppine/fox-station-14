@@ -59,9 +59,15 @@ namespace Content.Client.Preferences.UI
 
         private readonly List<AntagPreferenceSelector> _antagPreferences;
 
-        private readonly IEntity _previewDummy;
-        private readonly SpriteView _previewSprite;
-        private readonly SpriteView _previewSpriteSide;
+        // ANTHROSYSTEM MODIFICATIONS
+        private IEntity _previewDummy;
+        private Control _previewContainer;
+        private Control _previewContainerSide;
+        /*
+        private SpriteView _previewSprite;
+        private SpriteView _previewSpriteSide;
+        */
+        // ANTHROSYSTEM MODIFICATIONS
 
         private bool _isDirty;
         private bool _needUpdatePreview;
@@ -651,6 +657,7 @@ namespace Content.Client.Preferences.UI
             {
                 if (Profile is null)
                     return;
+                RecreateDummy(entityManager);
                 Profile = Profile.WithCharacterAppearance(
                     Profile.Appearance.WithMarkings(markingList));
                 IsDirty = true;
@@ -659,6 +666,7 @@ namespace Content.Client.Preferences.UI
             {
                 if (Profile is null)
                     return;
+                RecreateDummy(entityManager);
                 Profile = Profile.WithCharacterAppearance(
                     Profile.Appearance.WithMarkings(markingList));
                 IsDirty = true;
@@ -751,39 +759,39 @@ namespace Content.Client.Preferences.UI
             _previewDummy = entityManager.SpawnEntity("MobHumanDummy", MapCoordinates.Nullspace);
             var sprite = _previewDummy.GetComponent<SpriteComponent>();
 
+            // ANTHROSYSTEM MODIFICATIONS
             // Front
-            var box = new Control()
+            _previewContainer = new Control()
             {
                 VerticalExpand = true,
                 SizeFlagsStretchRatio = 1f,
             };
-            vBox.AddChild(box);
-            _previewSprite = new SpriteView
+            vBox.AddChild(_previewContainer);
+            _previewContainer.AddChild(new SpriteView
             {
                 Sprite = sprite,
                 Scale = (6, 6),
                 OverrideDirection = Direction.South,
                 VerticalAlignment = VAlignment.Center,
                 SizeFlagsStretchRatio = 1
-            };
-            box.AddChild(_previewSprite);
+            });
 
             // Side
-            box = new Control()
+            _previewContainerSide = new Control()
             {
                 VerticalExpand = true,
                 SizeFlagsStretchRatio = 1f,
             };
-            vBox.AddChild(box);
-            _previewSpriteSide = new SpriteView
+            vBox.AddChild(_previewContainerSide);
+            _previewContainerSide.AddChild(new SpriteView
             {
                 Sprite = sprite,
                 Scale = (6, 6),
                 OverrideDirection = Direction.East,
                 VerticalAlignment = VAlignment.Center,
                 SizeFlagsStretchRatio = 1
-            };
-            box.AddChild(_previewSpriteSide);
+            });
+            // ANTHROSYSTEM MODIFICATIONS
 
             #endregion Right
 

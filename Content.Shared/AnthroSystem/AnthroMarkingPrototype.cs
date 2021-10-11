@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Content.Shared.Body.Part;
 using Content.Shared.CharacterAppearance;
 using Robust.Shared.Localization;
 using Robust.Shared.Prototypes;
@@ -17,15 +16,21 @@ namespace Content.Shared.AnthroSystem
 
         public string Name { get; private set; } = default!;
 
-        [DataField("bodyPart")]
+        [DataField("bodyPart", required: true)]
         public HumanoidVisualLayers BodyPart { get; } = default!;
 
-        [DataField("sprite", required: true)]
-        public SpriteSpecifier Sprite { get; } = default!;
+        [DataField("markingLayerNames", required: true)]
+        public List<string> MarkingPartNames { get; } = default!;
+
+        [DataField("markingCategory", required: true)]
+        public AnthroMarkingCategories MarkingCategory { get; } = default!;
+
+        [DataField("sprites", required: true)]
+        public List<SpriteSpecifier> Sprites { get; private set; } = default!;
 
         public AnthroMarking AsMarking()
         {
-            return new AnthroMarking(ID, null);
+            return new AnthroMarking(ID, Sprites.Count);
         }
 
         void ISerializationHooks.AfterDeserialization()
