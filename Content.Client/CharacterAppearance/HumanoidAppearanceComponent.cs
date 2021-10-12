@@ -1,3 +1,4 @@
+using Content.Client.AnthroSystem;
 using Content.Client.Cuffs.Components;
 using Content.Shared.Body.Components;
 using Content.Shared.Body.Part;
@@ -108,7 +109,7 @@ namespace Content.Client.CharacterAppearance
             sprite.LayerSetSprite(HumanoidVisualLayers.Hair, hairPrototype.Sprite);
             sprite.LayerSetSprite(HumanoidVisualLayers.FacialHair, facialHairPrototype.Sprite);
 
-            UpdateAnthroSystem(); // AnthroSystem Modification
+            EntitySystem.Get<AnthroEntitySystem>().UpdateMarkings(Owner.Uid, Appearance);
         }
 
         public void BodyPartAdded(BodyPartAddedEventArgs args)
