@@ -13,8 +13,7 @@ using Robust.Shared.Prototypes;
 namespace Content.Client.CharacterAppearance
 {
     [RegisterComponent]
-    // Required to be partial to allow drop-in.
-    public sealed partial class HumanoidAppearanceComponent : SharedHumanoidAppearanceComponent, IBodyPartAdded, IBodyPartRemoved
+    public sealed class HumanoidAppearanceComponent : SharedHumanoidAppearanceComponent, IBodyPartAdded, IBodyPartRemoved
     {
         [Dependency] private readonly SpriteAccessoryManager _accessoryManager = default!;
         [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
@@ -109,6 +108,7 @@ namespace Content.Client.CharacterAppearance
             sprite.LayerSetSprite(HumanoidVisualLayers.Hair, hairPrototype.Sprite);
             sprite.LayerSetSprite(HumanoidVisualLayers.FacialHair, facialHairPrototype.Sprite);
 
+            // AnthroSystem modification
             EntitySystem.Get<AnthroEntitySystem>().UpdateMarkings(Owner.Uid, Appearance);
         }
 
@@ -128,7 +128,7 @@ namespace Content.Client.CharacterAppearance
             // TODO BODY Layer color, sprite and state
             foreach (var layer in layers)
             {
-                ToggleMarkingVisibility(sprite, layer, true); // AnthroSystem modification
+                EntitySystem.Get<AnthroEntitySystem>().ToggleMarkingVisibility(Owner.Uid, sprite, layer, true); // AnthroSystem modification
                 sprite.LayerSetVisible(layer, true);
             }
         }
@@ -149,7 +149,7 @@ namespace Content.Client.CharacterAppearance
             // TODO BODY Layer color, sprite and state
             foreach (var layer in layers)
             {
-                ToggleMarkingVisibility(sprite, layer, false); // AnthroSystem modification
+                EntitySystem.Get<AnthroEntitySystem>().ToggleMarkingVisibility(Owner.Uid, sprite, layer, false); // AnthroSystem modification
                 sprite.LayerSetVisible(layer, false);
             }
         }

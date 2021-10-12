@@ -47,6 +47,15 @@ namespace Content.Client.AnthroSystem
 
         }
 
+        public void ToggleMarkingVisibility(EntityUid uid, SpriteComponent body, HumanoidVisualLayers layer, bool toggle)
+        {
+            var owner = EntityManager.GetEntity(uid);
+            if(!owner.TryGetComponent(out AnthroComponent? anthroSystem)) return;
+
+            if (anthroSystem.ActiveMarkings.TryGetValue(layer, out List<AnthroMarking>? layerMarkings))
+                foreach (AnthroMarking marking in layerMarkings)
+                    body.LayerSetVisible(marking.MarkingId, toggle);
+        }
         // we use HumanoidCharacterProfile because it already exists -
         // we just grab the inner Appearance from it since we've tied it in
         // severely to that
