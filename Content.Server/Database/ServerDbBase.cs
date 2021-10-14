@@ -212,13 +212,11 @@ namespace Content.Server.Database
             // marking ranking information
             // ANTHROSYSTEM MODIFICATION
             List<string> markingDbStrings = new();
-            Logger.DebugS("DB", $"Marking count: {appearance.Markings.Count}");
             foreach (var marking in appearance.Markings)
             {
                 markingDbStrings.Add(marking.ToString());
             }
             string markings = string.Join('|', markingDbStrings);
-            Logger.DebugS("DB", $"Markings saved as {markings}");
             // ANTHROSYSTEM MODIFICATION
 
             var entity = new Profile
