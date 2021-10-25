@@ -193,6 +193,7 @@
       types:
         Heat : 1 #per second, scales with temperature & other constants
   - type: HumanoidAppearance
+  - type: AnthroSystem # ECS!!!
   - type: Body
     template: HumanoidTemplate
     preset: HumanPreset
@@ -383,6 +384,7 @@
         layer:
         - Opaque
     - type: HumanoidAppearance
+    - type: AnthroSystem # ECS!!!
     - type: Body
       template: HumanoidTemplate
       preset: HumanPreset
