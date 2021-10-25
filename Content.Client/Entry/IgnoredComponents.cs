@@ -49,6 +49,7 @@ namespace Content.Client.Entry
             "AccessReader",
             "IdCardConsole",
             "Airlock",
+            "AtmosFixMarker",
             "CablePlacer",
             "Drink",
             "Food",
@@ -118,7 +119,6 @@ namespace Content.Client.Entry
             "Telecrystal",
             "TrashSpawner",
             "RCD",
-            "RCDDeconstructWhitelist",
             "RCDAmmo",
             "CursedEntityStorage",
             "Listening",
@@ -279,7 +279,20 @@ namespace Content.Client.Entry
             "IncreaseDamageOnWield",
             "AmbientOnPowered",
             "TabletopGame",
-            "LitOnPowered"
+            "LitOnPowered",
+            "TriggerOnSignalReceived",
+            "ToggleDoorOnTrigger",
+            "DeviceNetworkComponent",
+            "WiredNetworkConnection",
+            "WirelessNetworkConnection",
+            "ExtensionCableReceiver",
+            "ExtensionCableProvider",
+            "ApcNetworkConnection",
+            "ApcNetSwitch",
+            "HandLabeler",
+            "Label",
+            "GhostRadio",
+            "Armor"
         };
     }
 }
