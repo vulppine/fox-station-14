@@ -1,7 +1,6 @@
 # Standard human.
 - type: anthroSpecies
   id: human
-  speciesBase: Human
   speciesSprite:
     Chest:
       sprite: Mobs/Species/Human/parts.rsi

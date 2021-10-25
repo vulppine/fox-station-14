@@ -25,7 +25,7 @@ namespace Content.Client.Preferences.UI
                 Orientation = LayoutOrientation.Vertical,
             };
 
-            var markingsPanel = HighlightedContainer();
+            var markingsPanel = new HighlightedContainer();
 
             markingsPanel.AddChild(markingPicker);
             markingsVBox.AddChild(markingsPanel);
@@ -43,9 +43,9 @@ namespace Content.Client.Preferences.UI
             _previewDummy = null!;
             _previewDummy = entityManager.SpawnEntity("MobHumanDummy", MapCoordinates.Nullspace);
             var sprite = _previewDummy.GetComponent<SpriteComponent>();
-            _previewContainer.RemoveAllChildren();
-            _previewContainerSide.RemoveAllChildren();
-            _previewContainer.AddChild(new SpriteView
+            _previewSpriteControl.RemoveAllChildren();
+            _previewSpriteSideControl.RemoveAllChildren();
+            _previewSpriteControl.AddChild(new SpriteView
             {
                 Sprite = sprite,
                 Scale = (6, 6),
@@ -53,7 +53,7 @@ namespace Content.Client.Preferences.UI
                 VerticalAlignment = VAlignment.Center,
                 SizeFlagsStretchRatio = 1
             });
-            _previewContainerSide.AddChild(new SpriteView
+            _previewSpriteSideControl.AddChild(new SpriteView
             {
                 Sprite = sprite,
                 Scale = (6, 6),
