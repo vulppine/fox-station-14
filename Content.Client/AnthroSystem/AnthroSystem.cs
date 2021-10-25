@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Content.Shared.AnthroSystem;
 using Content.Shared.CharacterAppearance;
+using Content.Shared.CharacterAppearance.Systems;
 using Content.Shared.Preferences;
 using Robust.Client.GameObjects;
 using Robust.Shared.GameObjects;
@@ -19,6 +20,7 @@ namespace Content.Client.AnthroSystem
         public override void Initialize()
         {
             SubscribeLocalEvent<AnthroComponent, ComponentInit>(OnAnthroSystemInit);
+            SubscribeLocalEvent<AnthroComponent, SharedHumanoidAppearanceSystem.ChangedHumanoidAppearanceEvent>(UpdateMarkings);
         }
 
         static HumanoidVisualLayers[] actualBodyParts =
@@ -65,11 +67,11 @@ namespace Content.Client.AnthroSystem
         // TODO: Untie Appearance.Markings, Appearance.SpeciesBase from
         // HumanoidCharacterAppearance, inline with the whole SQL model
         // thing as well probably
-        public void UpdateMarkings(EntityUid uid, HumanoidCharacterAppearance appearance)
+        public void UpdateMarkings(EntityUid uid, AnthroComponent anthroSystem, SharedHumanoidAppearanceSystem.ChangedHumanoidAppearanceEvent args)
         {
+            var appearance = args.Appearance;
             var owner = EntityManager.GetEntity(uid);
-            if(!owner.TryGetComponent(out AnthroComponent? anthroSystem)
-                || !owner.TryGetComponent(out SpriteComponent? sprite)) return;
+            if (!EntityManager.TryGetComponent(uid, out SpriteComponent? sprite)) return;
 
             if (appearance.SpeciesBase != anthroSystem.LastBase
                     && _speciesManager.SpeciesHasSprites(appearance.SpeciesBase,
@@ -137,9 +139,11 @@ namespace Content.Client.AnthroSystem
             }
         }
 
+        /*
         public void UpdateMarkings(EntityUid uid, HumanoidCharacterProfile profile)
         {
             UpdateMarkings(uid, profile.Appearance);
         }
+        */
     }
 }
