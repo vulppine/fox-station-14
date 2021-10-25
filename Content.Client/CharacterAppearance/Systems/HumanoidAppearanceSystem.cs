@@ -84,7 +84,7 @@ namespace Content.Client.CharacterAppearance.Systems
             sprite.LayerSetSprite(HumanoidVisualLayers.Hair, hairPrototype.Sprite);
             sprite.LayerSetSprite(HumanoidVisualLayers.FacialHair, facialHairPrototype.Sprite);
 
-            UpdateAnthroSystem(); // AnthroSystem Modification
+            // UpdateAnthroSystem(); // AnthroSystem Modification
         }
 
         // Scaffolding until Body is moved to ECS.
@@ -105,7 +105,7 @@ namespace Content.Client.CharacterAppearance.Systems
             // TODO BODY Layer color, sprite and state
             foreach (var layer in layers)
             {
-                ToggleMarkingVisibility(sprite, layer, true); // AnthroSystem modification
+                // ToggleMarkingVisibility(sprite, layer, true); // AnthroSystem modification
                 sprite.LayerSetVisible(layer, true);
             }
         }
@@ -127,7 +127,7 @@ namespace Content.Client.CharacterAppearance.Systems
             // TODO BODY Layer color, sprite and state
             foreach (var layer in layers)
             {
-                ToggleMarkingVisibility(sprite, layer, false); // AnthroSystem modification
+                // ToggleMarkingVisibility(sprite, layer, false); // AnthroSystem modification
                 sprite.LayerSetVisible(layer, false);
             }
         }
